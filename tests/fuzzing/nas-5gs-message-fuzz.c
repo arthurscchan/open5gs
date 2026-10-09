@@ -30,7 +30,7 @@ extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 {
 
     if (Size < kMinInputLength || Size > kMaxInputLength) {
-        return 1;
+        return 0;
     }
 
     if (!initialized) {
@@ -38,13 +38,12 @@ extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         ogs_log_install_domain(&__ogs_nas_domain, "nas", OGS_LOG_NONE);
     }
 
-    int result;
     ogs_pkbuf_t *pkbuf;
     ogs_nas_5gs_message_t message;
 
     pkbuf = ogs_pkbuf_alloc(NULL, OGS_MAX_SDU_LEN);
     if (pkbuf == NULL) {
-        return 1;
+        return 0;
     }
 
     /* First byte selects the 5GS sublayer: even = 5GMM, odd = 5GSM. */
@@ -52,12 +51,12 @@ extern int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
     ogs_pkbuf_put_data(pkbuf, Data + 1, Size - 1);
 
     if (selector & 1) {
-        result = ogs_nas_5gsm_decode(&message, pkbuf);
+        ogs_nas_5gsm_decode(&message, pkbuf);
     } else {
-        result = ogs_nas_5gmm_decode(&message, pkbuf);
+        ogs_nas_5gmm_decode(&message, pkbuf);
     }
 
     ogs_pkbuf_free(pkbuf);
 
-    return result;
+    return 0;
 }
