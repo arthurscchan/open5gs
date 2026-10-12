@@ -31,6 +31,7 @@ sbi_sm_context_source = files('sbi-sm-context-fuzz.c')
 ipfw_rule_source = files('ipfw-rule-fuzz.c')
 sbi_openapi_model_source = files('sbi-openapi-model-fuzz.c')
 sbi_request_source = files('sbi-request-fuzz.c')
+protocol_helpers_source = files('protocol-helpers-fuzz.c')
 
 # Build all executable
 executable(
@@ -118,5 +119,13 @@ executable(
     sources : ipfw_rule_source,
     c_args : [testunit_core_cc_flags, sbi_cc_flags],
     dependencies : [libipfw_dep, libproto_dep, libcore_dep],
+    link_args: lib_fuzzing_engine
+)
+
+executable(
+    'protocol_helpers_fuzz',
+    sources : protocol_helpers_source,
+    c_args : [testunit_core_cc_flags, sbi_cc_flags],
+    dependencies : [libproto_dep, libnas_common_dep, libcore_dep],
     link_args: lib_fuzzing_engine
 )
